@@ -9,6 +9,7 @@ for details.
 
 #include <windows.h>
 #include <cstdint>
+#include <string>
 
 namespace LuGo {
     namespace IO {
@@ -24,7 +25,31 @@ namespace LuGo {
             private:
                 Logger() {
                     AllocConsole();
+                    SetConsoleTitleA("LuGo v2");
+
+                    //allow text colouring in the console window.
+                    freopen("CONOUT$", "w", stdout);
+                    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+                    DWORD mode = 0;
+                    GetConsoleMode(hOut, &mode);
+                    mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+                    SetConsoleMode(hOut, mode);
                 }
+
+                ~Logger() {
+                    FreeConsole();
+                }
+
+            public:
+                static Logger& GetSingleton() {
+                    static Logger singleton;
+                    return singleton;
+                }
+
+                void Log(const std::string_view message, const char* function, const OutputType outputType = OutputType::Normal) const;
         };
+
+        //logger macro for easy function name in the message.
+        #define LuGoLog(message, type) LuGo::IO::Logger::GetSingleton().Log((message), __FUNCTION__, type)
     }
 }

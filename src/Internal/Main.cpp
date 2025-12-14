@@ -10,7 +10,7 @@ for details.
 
 
 static void Entry() {
-
+    LuGo::IO::Logger::GetSingleton();
 }
 
 
