@@ -1,0 +1,6 @@
+[submodule "Dependencies/Internal/libhat"]
+	path = Dependencies/Internal/libhat
+	url = https://github.com/BasedInc/libhat
+[submodule "dependencies/Internal/Capstone"]
+	path = dependencies/Internal/Capstone
+	url = https://github.com/capstone-engine/capstone
