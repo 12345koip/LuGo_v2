@@ -19,6 +19,11 @@ namespace LuGo {
                 std::vector<AsmInstruction> instructions;
 
             public:
+                AsmInstructionList(AsmInstructionList&&) = default;
+                AsmInstructionList() = default;
+                explicit AsmInstructionList(const std::vector<AsmInstruction>& move): instructions(move) {};
+
+
                 //we will allow standard iteration over the class.
                 L_NODISCARD inline auto begin() const noexcept {return this->instructions.begin();}
                 L_NODISCARD inline auto end() const noexcept {return this->instructions.end();}
@@ -34,7 +39,6 @@ namespace LuGo {
 
                 const std::vector<const AsmInstruction*> GetAllInstructionsWhichMatch(const std::string_view& mnemonic, const std::string_view& operandStr) const;
                 const std::vector<const AsmInstruction*> GetAllInstructionsWhichMatch(const x86_insn opcode, const std::string_view& operandStr) const;
-
 
                 //direct indexing.
                 L_FORCEINLINE const AsmInstruction* operator[](const uint64_t i) const {

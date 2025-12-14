@@ -16,7 +16,6 @@ namespace LuGo {
         struct AsmOperand {
             int type;
             int64_t disp;
-            int ref;
             int64_t imm;
             x86_reg reg;
             x86_reg base;

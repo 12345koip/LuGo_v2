@@ -35,7 +35,7 @@ namespace LuGo {
                     mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
                     SetConsoleMode(hOut, mode);
 
-                    //reroute standard output to the new console.
+                    //reroute standard IO to the new console.
                     FILE* fp;
                     freopen_s(&fp, "CONOUT$", "w", stdout);
                     freopen_s(&fp, "CONOUT$", "w", stderr);

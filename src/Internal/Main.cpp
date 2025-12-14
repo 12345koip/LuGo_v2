@@ -12,7 +12,7 @@ for details.
 
 static void Entry() {
     LuGo::IO::Logger::GetSingleton();
-
+    LUGO_ASSERT(3 == 5, "hi");
 }
 
 

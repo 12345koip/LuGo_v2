@@ -24,6 +24,7 @@ add_library(LuGo_Internal SHARED
         src/Internal/Analysis/Dissassembler/AsmInstructionList.hpp
         src/Internal/Common/Attributes.hpp
         src/Internal/Analysis/Dissassembler/AsmInstructionList.cpp
+        src/Internal/Analysis/Dissassembler/Dissassembler.cpp
 )
 
 target_include_directories(LuGo_Internal PUBLIC
