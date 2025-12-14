@@ -3,3 +3,4 @@ bin/
 build-dll-debug/
 build-dll-release/
 src/_inject/
+lib/
