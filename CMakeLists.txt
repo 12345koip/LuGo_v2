@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 4.2)
 project(LuGo_v2 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED YES)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}/bin")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin")
@@ -17,16 +18,29 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/lib")
 add_library(LuGo_Internal SHARED
         src/Internal/Main.cpp
         src/Internal/Logger/Logger.cpp
+        src/Internal/Analysis/Dissassembler/Dissassembler.hpp
+        src/Internal/Analysis/Dissassembler/AsmOperand.hpp
+        src/Internal/Analysis/Dissassembler/AsmInstruction.hpp
+        src/Internal/Analysis/Dissassembler/AsmInstructionList.hpp
+        src/Internal/Common/Attributes.hpp
+        src/Internal/Analysis/Dissassembler/AsmInstructionList.cpp
 )
 
 target_include_directories(LuGo_Internal PUBLIC
         Dependencies/Internal
+        src/Internal
+        src/
 )
 
 set_target_properties(LuGo_Internal PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
         OUTPUT_NAME "LuGo.Internal"
 )
+
+add_subdirectory(Dependencies/Internal/Capstone)
+add_subdirectory(Dependencies/Internal/LibHat)
+target_link_libraries(LuGo_Internal PRIVATE capstone)
+target_link_libraries(LuGo_Internal PRIVATE libhat)
 
 #UI bits.
 #will be done later ok ty

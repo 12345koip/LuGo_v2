@@ -7,10 +7,12 @@ for details.
 
 #include <thread>
 #include "Logger/Logger.hpp"
+#include "Common/Attributes.hpp"
 
 
 static void Entry() {
     LuGo::IO::Logger::GetSingleton();
+
 }
 
 
