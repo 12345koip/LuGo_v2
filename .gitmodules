@@ -4,3 +4,6 @@
 [submodule "dependencies/Internal/Capstone"]
 	path = dependencies/Internal/Capstone
 	url = https://github.com/capstone-engine/capstone
+[submodule "Dependencies/Internal/RTTIHook"]
+	path = Dependencies/Internal/RTTIHook
+	url = https://github.com/Dasaav-dsv/RTTIHook

@@ -9,7 +9,7 @@ for details.
 
 #include <windows.h>
 #include <cstdint>
-#include <string>
+#include <format>
 
 
 namespace LuGo::IO {

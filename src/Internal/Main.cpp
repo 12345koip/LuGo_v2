@@ -7,11 +7,13 @@ for details.
 
 #include <thread>
 #include "Logger/Logger.hpp"
+#include "Analysis/RTTI/RTTIManager.hpp"
 #include "Common/Attributes.hpp"
 
 
 static void Entry() {
     LuGo::IO::Logger::GetSingleton();
+    LuGo::Analysis::RTTI::RTTIManager::GetSingleton();
 }
 
 
