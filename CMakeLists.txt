@@ -25,6 +25,7 @@ add_library(LuGo_Internal SHARED
         src/Internal/Analysis/Dissassembler/AsmInstructionList.cpp
         src/Internal/Analysis/Dissassembler/Dissassembler.cpp
         src/Internal/Analysis/RTTI/RTTIManager.hpp
+        src/Internal/Analysis/Offsets/PointerObfuscation.hpp
 )
 
 target_include_directories(LuGo_Internal PUBLIC
