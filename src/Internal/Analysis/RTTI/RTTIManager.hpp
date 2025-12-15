@@ -53,12 +53,12 @@ namespace LuGo::Analysis::RTTI {
                 return hook;
             }
 
-            L_NODISCARD std::shared_ptr<VFTHook> GetVFTHookForClass(const std::string& className) const {
-                return (this->activeVFTHooks.contains(className)? this->activeVFTHooks.at(className): nullptr);
+            L_NODISCARD std::shared_ptr<VFTHook> GetVFTHookForClass(const std::string_view className) const {
+                return (this->activeVFTHooks.contains(std::string(className))? this->activeVFTHooks.at(std::string(className)): nullptr);
             };
 
-            void RemoveHookForClass(const std::string& className) {
-                if (const auto it = this->activeVFTHooks.find(className); it != this->activeVFTHooks.end())
+            void RemoveHookForClass(const std::string_view className) {
+                if (const auto it = this->activeVFTHooks.find(std::string(className)); it != this->activeVFTHooks.end())
                     this->activeVFTHooks.erase(it);
             };
     };
