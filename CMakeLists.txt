@@ -13,7 +13,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}/lib")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/lib")
 
-
 #DLL bits.
 add_library(LuGo_Internal SHARED
         src/Internal/Main.cpp
@@ -38,10 +37,15 @@ set_target_properties(LuGo_Internal PROPERTIES
         OUTPUT_NAME "LuGo.Internal"
 )
 
+target_compile_definitions(LuGo_Internal PRIVATE
+        $<$<CONFIG:Debug>:DEBUG_BUILD>
+)
+
 add_subdirectory(Dependencies/Internal/Capstone)
 add_subdirectory(Dependencies/Internal/LibHat)
 target_link_libraries(LuGo_Internal PRIVATE capstone)
 target_link_libraries(LuGo_Internal PRIVATE libhat)
+
 
 #UI bits.
 #will be done later ok ty

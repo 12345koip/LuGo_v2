@@ -13,21 +13,20 @@ for details.
 #include <string>
 #include <vector>
 
-namespace LuGo {
-    namespace Analysis {
 
-        struct AsmInstruction final {
-            std::string mnemonic;
-            std::string operands;
-            uint64_t address;
-            size_t size;
-            x86_insn opcode;
-            std::vector<uint8_t> bytes;
-            std::vector<AsmOperand> detail;
+namespace LuGo::Analysis {
 
-            AsmInstruction(const std::string_view& mn, const std::string_view& op, uintptr_t add, uint64_t sz, std::vector<uint8_t> bytes, std::vector<AsmOperand> detail, x86_insn id):
-                mnemonic(mn), operands(op), address(add), size(sz), bytes(std::move(bytes)), detail(std::move(detail)), opcode(id) {}
-        };
+    struct AsmInstruction final {
+        std::string mnemonic;
+        std::string operands;
+        uint64_t address;
+        size_t size;
+        x86_insn opcode;
+        std::vector<uint8_t> bytes;
+        std::vector<AsmOperand> detail;
 
-    }
+        AsmInstruction(const std::string_view& mn, const std::string_view& op, uintptr_t add, uint64_t sz, std::vector<uint8_t> bytes, std::vector<AsmOperand> detail, x86_insn id):
+            mnemonic(mn), operands(op), address(add), size(sz), bytes(std::move(bytes)), detail(std::move(detail)), opcode(id) {}
+    };
+
 }

@@ -11,51 +11,50 @@ for details.
 #include <cstdint>
 #include <string>
 
-namespace LuGo {
-    namespace IO {
 
-        enum class OutputType: uint8_t {
-            Normal,
-            Warning,
-            Error,
-            Info
-        };
+namespace LuGo::IO {
 
-        class Logger final {
-            private:
-                Logger() {
-                    AllocConsole();
-                    SetConsoleTitleA("LuGo v2");
+    enum class OutputType: uint8_t {
+        Normal,
+        Warning,
+        Error,
+        Info
+    };
 
-                    //allow text colouring in the console window.
-                    freopen("CONOUT$", "w", stdout);
-                    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-                    DWORD mode = 0;
-                    GetConsoleMode(hOut, &mode);
-                    mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-                    SetConsoleMode(hOut, mode);
+    class Logger final {
+        private:
+            Logger() {
+                AllocConsole();
+                SetConsoleTitleA("LuGo v2");
 
-                    //reroute standard IO to the new console.
-                    FILE* fp;
-                    freopen_s(&fp, "CONOUT$", "w", stdout);
-                    freopen_s(&fp, "CONOUT$", "w", stderr);
-                    freopen_s(&fp, "CONIN$", "r", stdin);
-                }
+                //allow text colouring in the console window.
+                freopen("CONOUT$", "w", stdout);
+                HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+                DWORD mode = 0;
+                GetConsoleMode(hOut, &mode);
+                mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+                SetConsoleMode(hOut, mode);
 
-                ~Logger() {
-                    FreeConsole();
-                }
+                //reroute standard IO to the new console.
+                FILE* fp;
+                freopen_s(&fp, "CONOUT$", "w", stdout);
+                freopen_s(&fp, "CONOUT$", "w", stderr);
+                freopen_s(&fp, "CONIN$", "r", stdin);
+            }
 
-            public:
-                static Logger& GetSingleton() {
-                    static Logger singleton;
-                    return singleton;
-                }
+            ~Logger() {
+                FreeConsole();
+            }
 
-                void Log(const std::string_view message, const char* function, const OutputType outputType = OutputType::Normal) const;
-        };
+        public:
+            static Logger& GetSingleton() {
+                static Logger singleton;
+                return singleton;
+            }
 
-        //logger macro for easy function name in the message.
-        #define LuGoLog(message, type) LuGo::IO::Logger::GetSingleton().Log((message), __FUNCTION__, type)
-    }
+            void Log(const std::string_view message, const char* function, const OutputType outputType = OutputType::Normal) const;
+    };
+
+    //logger macro for easy function name in the message.
+    #define LuGoLog(message, type) LuGo::IO::Logger::GetSingleton().Log((message), __FUNCTION__, type)
 }

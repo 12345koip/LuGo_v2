@@ -11,22 +11,6 @@ for details.
 
 using namespace LuGo;
 
-static constexpr const char* OutputTypeToString(const IO::OutputType outputType) {
-    switch (outputType) {
-        case IO::OutputType::Error:
-            return "ERROR";
-
-        case IO::OutputType::Info:
-            return "INFO";
-
-        case IO::OutputType::Warning:
-            return "WARNING";
-
-        default:
-            return "OTHER";
-    }
-}
-
 void IO::Logger::Log(const std::string_view message, const char* function, const OutputType outputType) const {
     switch (outputType) {
         case OutputType::Error:

@@ -32,10 +32,12 @@ static L_NORETURN _lugo_assertion_fail_handler(const char* expression, const cha
         expression, location.function_name(), location.line(), message
     );
 
+    #ifdef DEBUG_BUILD
     if (IsDebuggerPresent())
         __debugbreak();
-    else
-        MessageBoxA(nullptr, "Assertion failed! Check output!", "Assertion failed", 0);
+    #endif
+
+    MessageBoxA(nullptr, "Assertion failed! Check output!", "Assertion failed", 0);
 
     std::abort();
 }
