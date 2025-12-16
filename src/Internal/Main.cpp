@@ -8,12 +8,17 @@ for details.
 #include <thread>
 #include "Logger/Logger.hpp"
 #include "Analysis/RTTI/RTTIManager.hpp"
+#include "Analysis/Offsets/OffsetManager.hpp"
+#include "Analysis/Offsets/Scanners/Scanners.hpp"
 #include "Common/Attributes.hpp"
 
 
 static void Entry() {
     LuGo::IO::Logger::GetSingleton();
     LuGo::Analysis::RTTI::RTTIManager::GetSingleton();
+
+    LuGo::Analysis::Offsets::Scanners::Luau::Scan();
+    LuGo::Analysis::Offsets::Scanners::RBX::Scan();
 }
 
 

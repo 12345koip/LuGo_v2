@@ -15,7 +15,7 @@ for details.
 using namespace LuGo::Analysis::Offsets;
 using namespace LuGo::IO;
 
-static std::map<RawPointerOffsetRef, hat::scan_result> ScanManyAOBsInSection(const std::map<RawPointerOffsetRef, hat::signature> signatureMap, const char* section) {
+static std::map<RawPointerOffsetRef, hat::scan_result> ScanManyAOBsInSection(const std::map<RawPointerOffsetRef, hat::signature>& signatureMap, const char* section = ".text") {
     std::vector<std::future<std::pair<RawPointerOffsetRef, hat::scan_result>>> futures {};
     futures.reserve(signatureMap.size());
 
@@ -41,6 +41,8 @@ static std::map<RawPointerOffsetRef, hat::scan_result> ScanManyAOBsInSection(con
     return results;
 }
 
+
+
 void Scanners::Luau::Scan() {
     auto& OffsetManager = OffsetManager::GetSingleton();
     LuGoLog("Scanning for Luau globals...", OutputType::Info);
@@ -61,8 +63,31 @@ void Scanners::Luau::Scan() {
         LuGoLog(std::format("{} @ {:#x}", RawPointerOffsetRefToString(ref), address), OutputType::Normal);
         OffsetManager.SetPointerOffset(ref, address);
     }
+
+    LuGoLog("Luau global scan finished!", OutputType::Info);
 }
 
-void Scanners::RBX::Scan() {
 
+
+void Scanners::RBX::Scan() {
+    auto& OffsetManager = OffsetManager::GetSingleton();
+    LuGoLog("Scanning for Roblox globals...", OutputType::Info);
+
+    static std::map<RawPointerOffsetRef, hat::signature> signatureMap = {
+        {RawPointerOffsetRef::RBX_ScriptContext_ResumeImpl, hat::parse_signature("48 8B C4 44 89 48 ?? 4C 89 40 ?? 48 89 50 ?? 48 89 48 ?? 53").value()},
+        {RawPointerOffsetRef::RBX_Instance_PushInstance, hat::parse_signature("48 89 5C 24 08 57 48 83 EC 20 48 8B FA 48 8B D9 E8 ?? ?? ?? ?? 48 8B CB 84 C0 74 ?? 48 8B D7 48 8B 5C 24 30 48 83 C4 20 5F E9 ?? ?? ?? ?? 48 8B 5C 24 30 48 83 C4 20 5F E9 ?? ?? ?? ?? CC CC CC").value()}
+    };
+
+    const auto scanResults = ScanManyAOBsInSection(signatureMap, ".text");
+
+    //store each address.
+    for (const auto& [ref, result]: scanResults) {
+        LUGO_ASSERT(result.has_result(), std::format("Could NOT find Roblox C function {}", RawPointerOffsetRefToString(ref)).c_str());
+
+        const auto address = reinterpret_cast<uintptr_t>(result.get());
+        LuGoLog(std::format("{} @ {:#x}", RawPointerOffsetRefToString(ref), address), OutputType::Normal);
+        OffsetManager.SetPointerOffset(ref, address);
+    }
+
+    LuGoLog("Roblox global scan finished!", OutputType::Info);
 }
