@@ -34,11 +34,11 @@ namespace LuGo::Analysis {
             //other methods.
             bool HasInstruction(const std::string_view& mnemonic, const std::string_view& operandStr) const;
 
-            const AsmInstruction* GetInstructionWhichMatches(const std::string_view& mnemonic, const std::string_view& operandStr) const;
-            const AsmInstruction* GetInstructionWhichMatches(const x86_insn opcode, const std::string_view& operandStr) const;
+            const AsmInstruction* GetInstructionWhichMatches(const std::string_view& mnemonic, const std::string_view& operandStr = "") const;
+            const AsmInstruction* GetInstructionWhichMatches(const x86_insn opcode, const std::string_view& operandStr = "") const;
 
-            const std::vector<const AsmInstruction*> GetAllInstructionsWhichMatch(const std::string_view& mnemonic, const std::string_view& operandStr) const;
-            const std::vector<const AsmInstruction*> GetAllInstructionsWhichMatch(const x86_insn opcode, const std::string_view& operandStr) const;
+            const std::vector<const AsmInstruction*> GetAllInstructionsWhichMatch(const std::string_view& mnemonic, const std::string_view& operandStr = "") const;
+            const std::vector<const AsmInstruction*> GetAllInstructionsWhichMatch(const x86_insn opcode, const std::string_view& operandStr = "") const;
 
             //direct indexing.
             L_FORCEINLINE const AsmInstruction* operator[](const uint64_t i) const {

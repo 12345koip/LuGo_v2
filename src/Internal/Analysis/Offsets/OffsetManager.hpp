@@ -19,17 +19,19 @@ namespace LuGo::Analysis::Offsets {
         luaH_new,
 
         RBX_Instance_PushInstance,
-        RBX_ScriptContext_ResumeImpl
+        RBX_ScriptContext_ResumeImpl,
+        RBX_ScriptContext_GetGlobalState
     };
 
     constexpr const char* RawPointerOffsetRefToString(const RawPointerOffsetRef ref) {
         switch (ref) {
-            case RawPointerOffsetRef::luaC_step:                    return "luaC_step";
-            case RawPointerOffsetRef::luaC_fullgc:                  return "luaC_fullgc";
-            case RawPointerOffsetRef::luaH_new:                     return "luaH_new";
-            case RawPointerOffsetRef::RBX_Instance_PushInstance:    return "Instance::PushInstance";
-            case RawPointerOffsetRef::RBX_ScriptContext_ResumeImpl: return "ScriptContext::resumeImpl";
-            default:                                                return "UNKNOWN";
+            case RawPointerOffsetRef::luaC_step:                        return "luaC_step";
+            case RawPointerOffsetRef::luaC_fullgc:                      return "luaC_fullgc";
+            case RawPointerOffsetRef::luaH_new:                         return "luaH_new";
+            case RawPointerOffsetRef::RBX_Instance_PushInstance:        return "Instance::PushInstance";
+            case RawPointerOffsetRef::RBX_ScriptContext_ResumeImpl:     return "ScriptContext::resumeImpl";
+            case RawPointerOffsetRef::RBX_ScriptContext_GetGlobalState: return "ScriptContext::GetGlobalState";
+            default:                                                    return "UNKNOWN";
         }
     }
 

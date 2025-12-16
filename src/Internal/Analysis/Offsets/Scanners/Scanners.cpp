@@ -77,7 +77,8 @@ void Scanners::RBX::ScanGlobals() {
 
     static std::map<RawPointerOffsetRef, hat::signature> signatureMap = {
         {RawPointerOffsetRef::RBX_ScriptContext_ResumeImpl, hat::parse_signature("48 8B C4 44 89 48 ?? 4C 89 40 ?? 48 89 50 ?? 48 89 48 ?? 53").value()},
-        {RawPointerOffsetRef::RBX_Instance_PushInstance, hat::parse_signature("48 89 5C 24 08 57 48 83 EC 20 48 8B FA 48 8B D9 E8 ?? ?? ?? ?? 48 8B CB 84 C0 74 ?? 48 8B D7 48 8B 5C 24 30 48 83 C4 20 5F E9 ?? ?? ?? ?? 48 8B 5C 24 30 48 83 C4 20 5F E9 ?? ?? ?? ?? CC CC CC").value()}
+        {RawPointerOffsetRef::RBX_Instance_PushInstance, hat::parse_signature("48 89 5C 24 08 57 48 83 EC 20 48 8B FA 48 8B D9 E8 ?? ?? ?? ?? 48 8B CB 84 C0 74 ?? 48 8B D7 48 8B 5C 24 30 48 83 C4 20 5F E9 ?? ?? ?? ?? 48 8B 5C 24 30 48 83 C4 20 5F E9 ?? ?? ?? ?? CC CC CC").value()},
+        {RawPointerOffsetRef::RBX_ScriptContext_GetGlobalState, hat::parse_signature("48 89 5c 24 ?? 48 89 74 24 ?? 57 48 83 ec 20 49 8b f8 48 8b f2 48 8b d9 8b 81 ?? ?? ?? ?? 90 83 f8 03 7c 20 48 8d 05 ?? ?? ?? ?? 48 89 44 24 48 48 8b 54 24 48 48 81 ea").value()}
     };
 
     const auto scanResults = ScanManyAOBsInSection(signatureMap, ".text");
@@ -97,7 +98,9 @@ void Scanners::RBX::ScanGlobals() {
 
 void Scanners::RBX::ScanPointerOffsets() {
     auto& OffsetManager = OffsetManager::GetSingleton();
-    auto& Dissassembler = Analysis::Dissassembler::GetSingleton();
+    auto& Dissassembler = Dissassembler::GetSingleton();
+    LuGoLog("Scanning for pointer obfuscations...", OutputType::Info);
+
 
     { //find the offset which ScriptContext::resumeImpl applies to the offset ScriptContext pointer.
         uintptr_t ScriptContext_resume_start = OffsetManager.GetPointerOffset(RawPointerOffsetRef::RBX_ScriptContext_ResumeImpl);
@@ -112,7 +115,7 @@ void Scanners::RBX::ScanPointerOffsets() {
         const AsmInstructionList& instructionList = *possibleInstructions;
 
         //the first lea instruction is the calculation of the actual ScriptContext pointer.
-        const auto firstLea = instructionList.GetInstructionWhichMatches(X86_INS_LEA, ", [");
+        const AsmInstruction* firstLea = instructionList.GetInstructionWhichMatches(X86_INS_LEA);
         const auto ScriptContext_offset = firstLea->detail[1].disp;
 
         auto obfuscationRep = std::make_shared<ObfuscatedPointer>(PointerObfuscationType::Add, ScriptContext_offset);
@@ -120,4 +123,8 @@ void Scanners::RBX::ScanPointerOffsets() {
 
         LuGoLog(std::format("ScriptContext::resumeImpl uses pointer offset by {:#x}", ScriptContext_offset), OutputType::Normal);
     }
+
+
+
+    LuGoLog("Pointer obfuscation scan complete!", OutputType::Info);
 }
