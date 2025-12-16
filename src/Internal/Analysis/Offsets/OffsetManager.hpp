@@ -7,7 +7,7 @@ for details.
 
 #pragma once
 
-#include <unordered_map>
+#include <map>
 #include "Common/Attributes.hpp"
 #include "PointerObfuscation.hpp"
 
@@ -22,9 +22,28 @@ namespace LuGo::Analysis::Offsets {
         RBX_ScriptContext_ResumeImpl
     };
 
+    constexpr const char* RawPointerOffsetRefToString(const RawPointerOffsetRef ref) {
+        switch (ref) {
+            case RawPointerOffsetRef::luaC_step:                    return "luaC_step";
+            case RawPointerOffsetRef::luaC_fullgc:                  return "luaC_fullgc";
+            case RawPointerOffsetRef::luaH_new:                     return "luaH_new";
+            case RawPointerOffsetRef::RBX_Instance_PushInstance:    return "Instance::PushInstance";
+            case RawPointerOffsetRef::RBX_ScriptContext_ResumeImpl: return "ScriptContext::resumeImpl";
+            default:                                                return "UNKNOWN";
+        }
+    }
+
     enum class ObfuscatedPointerRef: uint8_t {
         ScriptContext, //for ScriptContext::resumeImpl.
     };
+
+    constexpr const char* ObfuscatedPointerRefToString(const ObfuscatedPointerRef ref) {
+        switch (ref) {
+            case ObfuscatedPointerRef::ScriptContext: return "ScriptContext";
+            default:                                  return "UNKNOWN";
+        }
+    }
+
 
     class OffsetManager final {
         private:

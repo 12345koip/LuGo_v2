@@ -27,6 +27,8 @@ add_library(LuGo_Internal SHARED
         src/Internal/Analysis/RTTI/RTTIManager.hpp
         src/Internal/Analysis/Offsets/PointerObfuscation.hpp
         src/Internal/Analysis/Offsets/OffsetManager.hpp
+        src/Internal/Analysis/Offsets/Scanners/Scanners.hpp
+        src/Internal/Analysis/Offsets/Scanners/Scanners.cpp
 )
 
 target_include_directories(LuGo_Internal PUBLIC
