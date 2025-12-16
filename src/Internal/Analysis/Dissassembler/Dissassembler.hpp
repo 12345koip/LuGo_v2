@@ -39,6 +39,11 @@ namespace LuGo::Analysis {
                         return currAddress;
                 }
             }
+
+            static Dissassembler& GetSingleton() {
+                static Dissassembler singleton;
+                return singleton;
+            }
     };
 
 }

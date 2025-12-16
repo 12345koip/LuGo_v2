@@ -8,6 +8,8 @@ for details.
 #include <future>
 #include <vector>
 #include "Scanners.hpp"
+
+#include "Analysis/Dissassembler/Dissassembler.hpp"
 #include "Analysis/Offsets/OffsetManager.hpp"
 #include "Common/Attributes.hpp"
 #include "Logger/Logger.hpp"
@@ -43,7 +45,7 @@ static std::map<RawPointerOffsetRef, hat::scan_result> ScanManyAOBsInSection(con
 
 
 
-void Scanners::Luau::Scan() {
+void Scanners::Luau::ScanGlobals() {
     auto& OffsetManager = OffsetManager::GetSingleton();
     LuGoLog("Scanning for Luau globals...", OutputType::Info);
 
@@ -69,7 +71,7 @@ void Scanners::Luau::Scan() {
 
 
 
-void Scanners::RBX::Scan() {
+void Scanners::RBX::ScanGlobals() {
     auto& OffsetManager = OffsetManager::GetSingleton();
     LuGoLog("Scanning for Roblox globals...", OutputType::Info);
 
@@ -90,4 +92,32 @@ void Scanners::RBX::Scan() {
     }
 
     LuGoLog("Roblox global scan finished!", OutputType::Info);
+}
+
+
+void Scanners::RBX::ScanPointerOffsets() {
+    auto& OffsetManager = OffsetManager::GetSingleton();
+    auto& Dissassembler = Analysis::Dissassembler::GetSingleton();
+
+    { //find the offset which ScriptContext::resumeImpl applies to the offset ScriptContext pointer.
+        uintptr_t ScriptContext_resume_start = OffsetManager.GetPointerOffset(RawPointerOffsetRef::RBX_ScriptContext_ResumeImpl);
+        uintptr_t dissassembleEndPoint = ScriptContext_resume_start + 0x75;
+
+        const auto possibleInstructions = Dissassembler.Dissassemble(
+            reinterpret_cast<uint8_t*>(ScriptContext_resume_start),
+            reinterpret_cast<uint8_t*>(dissassembleEndPoint)
+        );
+
+        LUGO_ASSERT(possibleInstructions.has_value(), "Could NOT get dissassembly for ScriptContext::resumeImpl");
+        const AsmInstructionList& instructionList = *possibleInstructions;
+
+        //the first lea instruction is the calculation of the actual ScriptContext pointer.
+        const auto firstLea = instructionList.GetInstructionWhichMatches(X86_INS_LEA, ", [");
+        const auto ScriptContext_offset = firstLea->detail[1].disp;
+
+        auto obfuscationRep = std::make_shared<ObfuscatedPointer>(PointerObfuscationType::Add, ScriptContext_offset);
+        OffsetManager.SetPointerObfuscation(ObfuscatedPointerRef::ScriptContext, obfuscationRep);
+
+        LuGoLog(std::format("ScriptContext::resumeImpl uses pointer offset by {:#x}", ScriptContext_offset), OutputType::Normal);
+    }
 }

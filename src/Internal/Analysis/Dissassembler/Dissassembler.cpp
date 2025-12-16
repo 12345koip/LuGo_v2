@@ -20,6 +20,13 @@ Dissassembler::Dissassembler() {
         LuGoLog("Could not initialise dissassembler! Cannot proceed!", IO::OutputType::Error);
         throw std::runtime_error("failed to initialise dissassembler");
     }
+
+    //enable dissassembly detail.
+    const cs_err detailStatus = cs_option(this->csHandle, CS_OPT_DETAIL, CS_OPT_ON);
+    if (detailStatus != CS_ERR_OK) {
+        LuGoLog("Could not initialise dissassembler! Cannot proceed!", IO::OutputType::Error);
+        throw std::runtime_error("failed to initialise dissassembler");
+    }
 }
 
 Dissassembler::~Dissassembler() {

@@ -17,8 +17,9 @@ static void Entry() {
     LuGo::IO::Logger::GetSingleton();
     LuGo::Analysis::RTTI::RTTIManager::GetSingleton();
 
-    LuGo::Analysis::Offsets::Scanners::Luau::Scan();
-    LuGo::Analysis::Offsets::Scanners::RBX::Scan();
+    LuGo::Analysis::Offsets::Scanners::Luau::ScanGlobals();
+    LuGo::Analysis::Offsets::Scanners::RBX::ScanGlobals();
+    LuGo::Analysis::Offsets::Scanners::RBX::ScanPointerOffsets();
 }
 
 

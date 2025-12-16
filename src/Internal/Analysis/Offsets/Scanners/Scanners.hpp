@@ -13,10 +13,12 @@ for details.
 
 namespace LuGo::Analysis::Offsets::Scanners {
     namespace Luau {
-        void Scan();
+        void ScanGlobals();
     }
 
     namespace RBX {
-        void Scan();
+        void ScanGlobals();
+        void ScanFastFlags();
+        void ScanPointerOffsets();
     }
 }
