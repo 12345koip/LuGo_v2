@@ -8,7 +8,7 @@ for details.
 #pragma once
 
 #include "Common/Attributes.hpp"
-#include "Logger/Logger.hpp"
+#include "IO/Logger.hpp"
 
 namespace LuGo::Analysis::Offsets {
 

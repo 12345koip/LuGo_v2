@@ -12,7 +12,7 @@ for details.
 #include "Analysis/Dissassembler/Dissassembler.hpp"
 #include "Analysis/Offsets/OffsetManager.hpp"
 #include "Common/Attributes.hpp"
-#include "Logger/Logger.hpp"
+#include "IO/Logger.hpp"
 
 using namespace LuGo::Analysis::Offsets;
 using namespace LuGo::IO;

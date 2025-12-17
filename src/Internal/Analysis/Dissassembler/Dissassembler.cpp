@@ -9,7 +9,7 @@ for details.
 #include <span>
 #include <iterator>
 #include "Dissassembler.hpp"
-#include "Logger/Logger.hpp"
+#include "IO/Logger.hpp"
 
 using namespace LuGo::Analysis;
 

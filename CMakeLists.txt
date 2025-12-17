@@ -16,7 +16,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/lib")
 #DLL bits.
 add_library(LuGo_Internal SHARED
         src/Internal/Main.cpp
-        src/Internal/Logger/Logger.cpp
+        src/Internal/IO/Logger.cpp
         src/Internal/Analysis/Dissassembler/Dissassembler.hpp
         src/Internal/Analysis/Dissassembler/AsmOperand.hpp
         src/Internal/Analysis/Dissassembler/AsmInstruction.hpp

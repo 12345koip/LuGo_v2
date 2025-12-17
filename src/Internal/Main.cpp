@@ -6,7 +6,7 @@ for details.
 */
 
 #include <thread>
-#include "Logger/Logger.hpp"
+#include "IO/Logger.hpp"
 #include "Analysis/RTTI/RTTIManager.hpp"
 #include "Analysis/Offsets/OffsetManager.hpp"
 #include "Analysis/Offsets/Scanners/Scanners.hpp"
