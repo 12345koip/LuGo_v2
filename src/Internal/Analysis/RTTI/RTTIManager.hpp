@@ -12,22 +12,30 @@ for details.
 
 #include <unordered_map>
 #include "Common/Attributes.hpp"
+#include "IO/Logger.hpp"
 #include "RTTIHook/src/PE.h"
 #include "RTTIHook/src/HookTemplates.h"
 #include "RTTIHook/src/RTTIScanner.h"
 #include "RTTIHook/src/VFTHook.h"
 
 namespace LuGo::Analysis::RTTI {
+    struct VFTHookInfo {
+        std::shared_ptr<RTTIScanner::RTTI> rtti;
+        void* originalFunction;
+        uint32_t vftSlot;
+        std::shared_ptr<VFTHook> hookInformation;
+    };
+
     class RTTIManager final {
         private:
             std::unique_ptr<RTTIScanner> scannerInst;
-            std::unordered_map<std::string, std::shared_ptr<VFTHook>> activeVFTHooks {};
+            std::unordered_map<std::string, std::shared_ptr<VFTHookInfo>> activeVFTHooks {};
 
             RTTIManager() {
-                LuGoLog("Scanning for RTTI...", IO::OutputType::Info);
+                LuGoLog("Scanning for RTTI...", LuGo::IO::OutputType::Info);
                 this->scannerInst = std::make_unique<RTTIScanner>();
                 this->scannerInst->scan();
-                LuGoLog("RTTI scan complete!", IO::OutputType::Info);
+                LuGoLog("RTTI scan complete!", LuGo::IO::OutputType::Info);
             }
 
         public:
@@ -41,19 +49,28 @@ namespace LuGo::Analysis::RTTI {
                 return std::shared_ptr<RTTIScanner::RTTI>(this->scannerInst->getClassRTTI(std::string(className)));
             }
 
-            L_NOINLINE std::shared_ptr<VFTHook> HookVirtualFunction(const std::string_view className, const uint32_t vtableIndex, void* replacement) {
+            L_NOINLINE std::shared_ptr<VFTHookInfo> HookVirtualFunction(const std::string_view className, const uint32_t vtableIndex, void* replacement) {
                 if (this->activeVFTHooks.contains(std::string(className))) return nullptr;
 
                 const auto& rttiForClass = this->GetRTTIForClass(className);
                 if (!rttiForClass) return nullptr;
 
+                void* originalFn = rttiForClass->pVirtualFunctionTable[vtableIndex];
                 auto hook = std::make_shared<VFTHook>(rttiForClass->pVirtualFunctionTable, vtableIndex, replacement);
-                this->activeVFTHooks.emplace(className, hook);
 
-                return hook;
+                auto info = std::make_shared<VFTHookInfo>(
+                    rttiForClass,
+                    originalFn,
+                    vtableIndex,
+                    hook
+                );
+
+                this->activeVFTHooks.emplace(className, info);
+
+                return info;
             }
 
-            L_NODISCARD std::shared_ptr<VFTHook> GetVFTHookForClass(const std::string_view className) const {
+            L_NODISCARD std::shared_ptr<VFTHookInfo> GetVFTHookForClass(const std::string_view className) const {
                 return (this->activeVFTHooks.contains(std::string(className))? this->activeVFTHooks.at(std::string(className)): nullptr);
             };
 

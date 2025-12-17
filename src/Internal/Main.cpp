@@ -11,16 +11,19 @@ for details.
 #include "Analysis/Offsets/OffsetManager.hpp"
 #include "Analysis/Offsets/Scanners/Scanners.hpp"
 #include "Common/Attributes.hpp"
+#include "Execution/Scheduling/Scheduler.hpp"
 
 
 static void Entry() {
     LuGo::IO::Logger::GetSingleton();
-    LuGo::Analysis::RTTI::RTTIManager::GetSingleton();
 
     LuGo::Analysis::Offsets::Scanners::Luau::ScanGlobals();
     LuGo::Analysis::Offsets::Scanners::RBX::ScanGlobals();
     LuGo::Analysis::Offsets::Scanners::RBX::ScanPointerOffsets();
     LuGo::Analysis::Offsets::Scanners::RBX::ScanFastFlags();
+
+    LuGo::Analysis::RTTI::RTTIManager::GetSingleton();
+    LuGo::Execution::Scheduling::Scheduler::GetSingleton();
 }
 
 

@@ -29,6 +29,12 @@ add_library(LuGo_Internal SHARED
         src/Internal/Analysis/Offsets/OffsetManager.hpp
         src/Internal/Analysis/Offsets/Scanners/Scanners.hpp
         src/Internal/Analysis/Offsets/Scanners/Scanners.cpp
+        src/Internal/Execution/Scheduling/Scheduler.hpp
+        src/Internal/Execution/RBXHooks/RBXHooks.hpp
+        src/Internal/Execution/RBXHooks/RBXHooks.cpp
+        src/Internal/RBX/TaskScheduler.hpp
+        src/Internal/Execution/Scheduling/Scheduler.cpp
+        src/Internal/Execution/Scheduling/RobloxJob.hpp
 )
 
 target_include_directories(LuGo_Internal PUBLIC
