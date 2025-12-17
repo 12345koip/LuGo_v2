@@ -78,7 +78,8 @@ void Scanners::RBX::ScanGlobals() {
     static std::map<RawPointerOffsetRef, hat::signature> signatureMap = {
         {RawPointerOffsetRef::RBX_ScriptContext_ResumeImpl, hat::parse_signature("48 8B C4 44 89 48 ?? 4C 89 40 ?? 48 89 50 ?? 48 89 48 ?? 53").value()},
         {RawPointerOffsetRef::RBX_Instance_PushInstance, hat::parse_signature("48 89 5C 24 08 57 48 83 EC 20 48 8B FA 48 8B D9 E8 ?? ?? ?? ?? 48 8B CB 84 C0 74 ?? 48 8B D7 48 8B 5C 24 30 48 83 C4 20 5F E9 ?? ?? ?? ?? 48 8B 5C 24 30 48 83 C4 20 5F E9 ?? ?? ?? ?? CC CC CC").value()},
-        {RawPointerOffsetRef::RBX_ScriptContext_GetGlobalState, hat::parse_signature("48 89 5c 24 ?? 48 89 74 24 ?? 57 48 83 ec 20 49 8b f8 48 8b f2 48 8b d9 8b 81 ?? ?? ?? ?? 90 83 f8 03 7c 20 48 8d 05 ?? ?? ?? ?? 48 89 44 24 48 48 8b 54 24 48 48 81 ea").value()}
+        {RawPointerOffsetRef::RBX_ScriptContext_GetGlobalState, hat::parse_signature("48 89 5c 24 ?? 48 89 74 24 ?? 57 48 83 ec 20 49 8b f8 48 8b f2 48 8b d9 8b 81 ?? ?? ?? ?? 90 83 f8 03 7c 20 48 8d 05 ?? ?? ?? ?? 48 89 44 24 48 48 8b 54 24 48 48 81 ea").value()},
+        {RawPointerOffsetRef::RBX_DataModel_GetGameStateType, hat::parse_signature("8B 81 E8 04 00 00 C3 CC CC").value()},
     };
 
     const auto scanResults = ScanManyAOBsInSection(signatureMap, ".text");
@@ -127,4 +128,89 @@ void Scanners::RBX::ScanPointerOffsets() {
 
 
     LuGoLog("Pointer obfuscation scan complete!", OutputType::Info);
+}
+
+
+
+static bool isLikelyASCII(const char* str) {
+    if (!str) return false;
+
+    for (size_t i = 0; i < 96; ++i) {
+        const uint8_t c = static_cast<uint8_t>(str[i]);
+        if (c == 0) return i >= 3;
+        if (c < 0x20 || c > 0x7E) return false;
+    }
+
+    return true;
+}
+
+
+//this function can hit false positives, although
+//the fast flags are only needed for a small portion
+//(most notably Luau thead resumption) so it should be ok.
+void Scanners::RBX::ScanFastFlags() {
+    LuGoLog("Scanning for fast flags...", OutputType::Info);
+    auto& Dissassembler = Dissassembler::GetSingleton();
+    auto& OffsetManager = OffsetManager::GetSingleton();
+
+
+
+    const auto textSectData = hat::process::get_process_module().get_section_data(".text");
+
+    constexpr auto sig1 = hat::compile_signature<"CC CC 41 B8 ?? ?? ?? ?? 48 8D 15 ?? ?? ?? ?? 48 8D ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? CC CC">();
+    constexpr auto sig2 = hat::compile_signature<"41 B8 ?? ?? ?? ?? 48 8D ?? ?? ?? ?? ?? 48 8D ?? ?? ?? ?? ?? ?? ?? ?? ?? ??">();
+    constexpr auto sig3 = hat::compile_signature<"45 33 C0 48 8D ?? ?? ?? ?? ?? 48 8D ?? ?? ?? ?? ?? ?? ?? ?? ?? ??">();
+
+    //contains the start of functions which will then
+    //expose the name and pointer of their respective FFlags.
+    std::vector<const uint8_t*> matchedCode {};
+
+    { //scan each stub signature.
+        using ScanResult = hat::scan_result_base<std::byte>;
+
+        const std::vector<ScanResult> rA = hat::find_all_pattern(textSectData.begin(), textSectData.end(), sig1);
+        for (const ScanResult& r: rA) matchedCode.push_back(reinterpret_cast<const uint8_t*>(r.get()));
+
+        const std::vector<ScanResult> rC = hat::find_all_pattern(textSectData.begin(), textSectData.end(), sig2);
+        for (const ScanResult& r: rC) matchedCode.push_back(reinterpret_cast<const uint8_t*>(r.get()));
+
+        const std::vector<ScanResult> rD = hat::find_all_pattern(textSectData.begin(), textSectData.end(), sig3);
+        for (const ScanResult& r: rD) matchedCode.push_back(reinterpret_cast<const uint8_t*>(r.get()));
+    }
+
+    //sort + remove overlaps.
+    std::ranges::sort(matchedCode.begin(), matchedCode.end());
+    const auto duplicates = std::ranges::unique(matchedCode);
+    matchedCode.erase(duplicates.begin(), duplicates.end());
+
+
+    //analyse each match and extract the fast flag.
+    size_t flagsAcquired = 0;
+
+    for (const uint8_t* match: matchedCode) {
+        const uint8_t* roughStart = match - 0x20;
+        const uint8_t* roughEnd = match + 0x20;
+
+        const auto possibleIns = Dissassembler.Dissassemble(roughStart, roughEnd);
+        if (!possibleIns) continue;
+        const AsmInstructionList& instructionList = *possibleIns;
+
+        //name instructions use rcx, and data instructions use rdx.
+        //both are used in lea instructions.
+        const AsmInstruction* nameInstruction = instructionList.GetInstructionWhichMatches(X86_INS_LEA, "rcx, ");
+        const AsmInstruction* dataInstruction = instructionList.GetInstructionWhichMatches(X86_INS_LEA, "rdx, ");
+        if (!nameInstruction || !dataInstruction) continue;
+
+        //the name and data instructions are rip-relative.
+        const auto nameAddress = Dissassembler::RelativeLeaToRuntimeAddress(nameInstruction);
+        const auto valueAddress = Dissassembler::RelativeLeaToRuntimeAddress(dataInstruction);
+
+        const char* nameStr = static_cast<const char*>(nameAddress);
+        if (!isLikelyASCII(nameStr)) continue;
+
+        OffsetManager.AddFastFlag(nameStr, valueAddress);
+        ++flagsAcquired;
+    }
+
+    LuGoLog(std::format("FFlag scan finished! Acquired {} fast flags!", flagsAcquired), OutputType::Info);
 }

@@ -20,6 +20,7 @@ static void Entry() {
     LuGo::Analysis::Offsets::Scanners::Luau::ScanGlobals();
     LuGo::Analysis::Offsets::Scanners::RBX::ScanGlobals();
     LuGo::Analysis::Offsets::Scanners::RBX::ScanPointerOffsets();
+    LuGo::Analysis::Offsets::Scanners::RBX::ScanFastFlags();
 }
 
 

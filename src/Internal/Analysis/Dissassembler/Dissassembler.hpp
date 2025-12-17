@@ -40,6 +40,14 @@ namespace LuGo::Analysis {
                 }
             }
 
+            static void* RelativeLeaToRuntimeAddress(const AsmInstruction* ins) {
+                if (ins->opcode != X86_INS_LEA) return nullptr;
+                const AsmOperand& src = ins->detail[1];
+
+                const uintptr_t resolved = (ins->address + ins->size) + src.disp;
+                return reinterpret_cast<void*>(resolved);
+            }
+
             static Dissassembler& GetSingleton() {
                 static Dissassembler singleton;
                 return singleton;
