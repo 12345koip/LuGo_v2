@@ -7,3 +7,6 @@
 [submodule "Dependencies/Internal/RTTIHook"]
 	path = Dependencies/Internal/RTTIHook
 	url = https://github.com/Dasaav-dsv/RTTIHook
+[submodule "Dependencies/Internal/Luau"]
+	path = Dependencies/Internal/Luau
+	url = https://www.github.com/luau-lang/luau.git

@@ -6,22 +6,11 @@ for details.
 */
 
 #pragma once
-
 #include <cstdint>
+#include "ScriptContext.hpp"
+#include "DataModel.hpp"
 
 namespace RBX {
-    namespace Studio {
-        enum StudioGameStateType: uint8_t {
-            StudioGameStateType_Edit,
-            StudioGameStateType_PlayClient,
-            StudioGameStateType_PlayServer,
-            StudioGameStateType_Standalone,
-            StudioGameStateType_Null
-        };
-    }
-
-
-
     struct Time {
         double sec;
     };
@@ -36,5 +25,14 @@ namespace RBX {
             };
 
         }
+    }
+
+    namespace ScriptContextFacets {
+        struct WaitingHybridScriptsJob {
+            char _pad0[0x1D8];
+            DataModel* dataModel;
+            char _pad1[0x18];
+            ScriptContext* scriptContext;
+        };
     }
 }

@@ -79,7 +79,8 @@ void Scanners::RBX::ScanGlobals() {
         {RawPointerOffsetRef::RBX_ScriptContext_ResumeImpl, hat::parse_signature("48 8B C4 44 89 48 ?? 4C 89 40 ?? 48 89 50 ?? 48 89 48 ?? 53").value()},
         {RawPointerOffsetRef::RBX_Instance_PushInstance, hat::parse_signature("48 89 5C 24 08 57 48 83 EC 20 48 8B FA 48 8B D9 E8 ?? ?? ?? ?? 48 8B CB 84 C0 74 ?? 48 8B D7 48 8B 5C 24 30 48 83 C4 20 5F E9 ?? ?? ?? ?? 48 8B 5C 24 30 48 83 C4 20 5F E9 ?? ?? ?? ?? CC CC CC").value()},
         {RawPointerOffsetRef::RBX_ScriptContext_GetGlobalState, hat::parse_signature("48 89 5c 24 ?? 48 89 74 24 ?? 57 48 83 ec 20 49 8b f8 48 8b f2 48 8b d9 8b 81 ?? ?? ?? ?? 90 83 f8 03 7c 20 48 8d 05 ?? ?? ?? ?? 48 89 44 24 48 48 8b 54 24 48 48 81 ea").value()},
-        {RawPointerOffsetRef::RBX_DataModel_GetGameStateType, hat::parse_signature("8B 81 E8 04 00 00 C3 CC CC").value()},
+        {RawPointerOffsetRef::RBX_DataModel_GetGameStateType, hat::parse_signature("8B 81 E8 04 00 00 C3 CC CC CC CC").value()},
+        {RawPointerOffsetRef::RBX_ScriptContext_GetDataModel, hat::parse_signature("48 83 EC ?? 48 85 C9 74 72").value()}
     };
 
     const auto scanResults = ScanManyAOBsInSection(signatureMap, ".text");

@@ -35,6 +35,10 @@ add_library(LuGo_Internal SHARED
         src/Internal/RBX/TaskScheduler.hpp
         src/Internal/Execution/Scheduling/Scheduler.cpp
         src/Internal/Execution/Scheduling/RobloxJob.hpp
+        src/Internal/RBX/ScriptContext.hpp
+        src/Internal/RBX/ScriptContext.cpp
+        src/Internal/RBX/DataModel.hpp
+        src/Internal/RBX/DataModel.cpp
 )
 
 target_include_directories(LuGo_Internal PUBLIC

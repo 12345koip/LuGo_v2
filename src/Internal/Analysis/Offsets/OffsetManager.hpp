@@ -22,7 +22,8 @@ namespace LuGo::Analysis::Offsets {
         RBX_Instance_PushInstance,
         RBX_ScriptContext_ResumeImpl,
         RBX_ScriptContext_GetGlobalState,
-        RBX_DataModel_GetGameStateType
+        RBX_ScriptContext_GetDataModel,
+        RBX_DataModel_GetGameStateType,
     };
 
     constexpr const char* RawPointerOffsetRefToString(const RawPointerOffsetRef ref) {
@@ -32,7 +33,8 @@ namespace LuGo::Analysis::Offsets {
             case RawPointerOffsetRef::luaH_new:                         return "luaH_new";
             case RawPointerOffsetRef::RBX_Instance_PushInstance:        return "Instance::PushInstance";
             case RawPointerOffsetRef::RBX_ScriptContext_ResumeImpl:     return "ScriptContext::resumeImpl";
-            case RawPointerOffsetRef::RBX_ScriptContext_GetGlobalState: return "ScriptContext::GetGlobalState";
+            case RawPointerOffsetRef::RBX_ScriptContext_GetGlobalState: return "ScriptContext::getGlobalState";
+            case RawPointerOffsetRef::RBX_ScriptContext_GetDataModel:   return "ScriptContext::getDataModel";
             case RawPointerOffsetRef::RBX_DataModel_GetGameStateType:   return "DataModel::getGameStateType";
             default:                                                    return "UNKNOWN";
         }

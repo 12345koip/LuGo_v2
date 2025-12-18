@@ -20,7 +20,11 @@ Scheduler::Scheduler() {
     LuGoLog("Initialising LuGo scheduler: hooking Roblox DataModel jobs...", IO::OutputType::Info);
     auto& RTTIManager = RTTI::RTTIManager::GetSingleton();
 
-    const std::unordered_map<std::string, std::shared_ptr<RTTIScanner::RTTI>> rttiMap = {
+    //NOTE: string keys used here because of vtable name mapping. RTTI hooks are
+    //stored under string keys in the RTTI manager, so it's less messy for the job hook
+    //to index a string key rather than get the enum and then get the string rep for it.
+    //the main step logic (Scheduler::OnRobloxJobStepped) works with the enum values.
+    const std::unordered_map<const char*, std::shared_ptr<RTTIScanner::RTTI>> rttiMap = {
         {"RBX::Studio::DebuggerConnectionJob", RTTIManager.GetRTTIForClass("RBX::Studio::DebuggerConnectionJob")},
         {"RBX::ModelMeshJob", RTTIManager.GetRTTIForClass("RBX::ModelMeshJob")},
         {"RBX::ScriptContextFacets::GcJob", RTTIManager.GetRTTIForClass("RBX::ScriptContextFacets::GcJob")},
@@ -45,8 +49,15 @@ Scheduler::Scheduler() {
     }
 
     LuGoLog("Hooking complete! Scheduler initialised!", IO::OutputType::Info);
+    //TODO: find offset of ScriptContext from WaitingHybridScriptsJob (check it), also
+    //import LuDumper structs (??) at least finish LuDumper structs lmao then make ExecutionContext
 }
 
 void Scheduler::OnRobloxJobStepped(void** job, const RBXJobType jobType, RBX::TaskScheduler::Job::Stats* metrics) {
+    if (jobType == RBXJobType::ScriptContextFacets_WaitingHybridScriptsJob) { //temporary little block for testing.
+        const auto* waitingHsJob = reinterpret_cast<RBX::ScriptContextFacets::WaitingHybridScriptsJob*>(job);
+        if (RBX::DataModel::GetGameStateType(waitingHsJob->dataModel) == RBX::Studio::StudioGameStateType_Null) return;
 
+        lua_State* L = RBX::ScriptContext::GetGlobalState(waitingHsJob->scriptContext);
+    }
 }
